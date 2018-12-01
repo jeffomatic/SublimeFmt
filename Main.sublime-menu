@@ -1,0 +1,33 @@
+[
+  {
+    "caption": "Preferences",
+    "id": "preferences",
+    "children": [
+      {
+        "caption": "Package Settings",
+        "id": "package-settings",
+        "children": [
+          {
+            "caption": "SublimeFmt",
+            "children": [
+              {
+                "caption": "README",
+                "command": "open_file",
+                "args": {
+                  "file": "${packages}/SublimeFmt/README.md"
+                }
+              },
+              {
+                "caption": "User Settings",
+                "command": "open_file",
+                "args": {
+                  "file": "${packages}/User/SublimeFmt.sublime-settings"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
