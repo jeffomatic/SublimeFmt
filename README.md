@@ -18,6 +18,11 @@ You'll want to create formatter entries under the `formatters` object:
     {
       "cmd": "ocp-indent",
       "extensions": [".ml"]
+    },
+    {
+      "cmd": "black --py36 -",
+      "extensions": [".py"],
+      "use_stdin": true
     }
   ]
 }
@@ -29,6 +34,7 @@ Name | Type | Description
 --- | --- | ---
 `cmd` | string | Absolute path to formatting command. SublimeFmt assumes that the command takes an input filename as its last argument, and emits the result to stdout.
 `extensions` | array<string> | The plugin will only run for files with extensions specified here.
+`use_stdin` | bool | By default, the plugin will run `cmd` using the source file as a command-line argument. By setting this configuration parameter to `true`, the plugin will instead pipe the contents of the source file to the formatter's stdin.
 
 You can also further restrict where the formatter runs by using exclude and include paths:
 

@@ -30,17 +30,12 @@ def path_contains_pattern(file_path, pattern):
     return False
 
 
-def find_fmt_command(src_path):
+def find_fmt_config(src_path):
     formatters = sublime.load_settings('SublimeFmt.sublime-settings').get(
         'formatters', [])
     for config in formatters:
         if path_matches_formatter(src_path, config):
-            cmd = config['cmd']
-            if not isinstance(cmd, str):
-                raise TypeError(
-                    'cmd for formatter matching "%s" is not a string' %
-                    (src_path))
-            return config['cmd']
+            return config
 
     return None
 
@@ -77,7 +72,8 @@ def path_matches_formatter(src_path, config):
 class SublimeFmtCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         src_path = self.view.file_name()
-        fmt_cmd = find_fmt_command(src_path)
+        config = find_fmt_config(src_path)
+        fmt_cmd = config['cmd']
         if fmt_cmd is None:
             return
 
@@ -94,6 +90,9 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
             os.close(fd)
 
             cmd = '%s "%s"' % (fmt_cmd, p)
+            if config.get('use_stdin', False):
+                cmd = '%s < "%s"' % (fmt_cmd, p)
+
             formatted = subprocess.check_output(
                 cmd, shell=True).decode('UTF-8')
             self.view.replace(edit, region, formatted)
