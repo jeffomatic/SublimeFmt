@@ -70,13 +70,13 @@ def path_matches_formatter(src_path, config):
 
 class SublimeFmtCommand(sublime_plugin.TextCommand):
     def run(self, edit):
+        start = time.time()
+
         src_path = self.view.file_name()
         config = find_fmt_config(src_path)
         fmt_cmd = config["cmd"]
         if fmt_cmd is None:
             return
-
-        start = time.time()
 
         region = sublime.Region(0, self.view.size())
         contents = self.view.substr(region)
