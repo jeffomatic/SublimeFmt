@@ -78,12 +78,14 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
         if fmt_cmd is None:
             return
 
+        cwd = os.path.dirname(src_path)
+
         region = sublime.Region(0, self.view.size())
         contents = self.view.substr(region)
 
         # Copy the view buffer into a tempfile, pass the contents to the formatter
         # command.
-        fd, p = tempfile.mkstemp()
+        fd, p = tempfile.mkstemp(dir=cwd)
         try:
             os.write(fd, bytes(contents, "UTF-8"))
             os.close(fd)
@@ -92,7 +94,6 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
             if config.get("use_stdin", False):
                 cmd = '%s < "%s"' % (fmt_cmd, p)
 
-            cwd = os.path.dirname(src_path)
             formatted = subprocess.check_output(cmd, shell=True, cwd=cwd).decode(
                 "UTF-8"
             )
