@@ -92,7 +92,10 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
             if config.get("use_stdin", False):
                 cmd = '%s < "%s"' % (fmt_cmd, p)
 
-            formatted = subprocess.check_output(cmd, shell=True).decode("UTF-8")
+            cwd = os.path.dirname(src_path)
+            formatted = subprocess.check_output(cmd, shell=True, cwd=cwd).decode(
+                "UTF-8"
+            )
             self.view.replace(edit, region, formatted)
         finally:
             # Ensure that the tempile fd is closed, and that the tempfile is removed.
