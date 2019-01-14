@@ -31,8 +31,9 @@ def path_contains_pattern(file_path, pattern):
 
 
 def find_fmt_config(src_path):
-    formatters = sublime.load_settings('SublimeFmt.sublime-settings').get(
-        'formatters', [])
+    formatters = sublime.load_settings("SublimeFmt.sublime-settings").get(
+        "formatters", []
+    )
     for config in formatters:
         if path_matches_formatter(src_path, config):
             return config
@@ -44,26 +45,24 @@ def path_matches_formatter(src_path, config):
     """Return True if the given formatter matches the provided path"""
 
     # Extension filter
-    if 'extensions' not in config:
+    if "extensions" not in config:
         return False
 
     _, ext = os.path.splitext(src_path)
-    if ext not in config['extensions']:
+    if ext not in config["extensions"]:
         return False
 
     # Path inclusion filter
-    include_patterns = config.get('folder_include_patterns', [])
+    include_patterns = config.get("folder_include_patterns", [])
     if len(include_patterns) > 0:
         if not any(
-                path_contains_pattern(src_path, pattern)
-                for pattern in include_patterns):
+            path_contains_pattern(src_path, pattern) for pattern in include_patterns
+        ):
             return False
 
     # Path exclusion filter
-    exclude_patterns = config.get('folder_exclude_patterns', [])
-    if any(
-            path_contains_pattern(src_path, pattern)
-            for pattern in exclude_patterns):
+    exclude_patterns = config.get("folder_exclude_patterns", [])
+    if any(path_contains_pattern(src_path, pattern) for pattern in exclude_patterns):
         return False
 
     return True
@@ -73,7 +72,7 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         src_path = self.view.file_name()
         config = find_fmt_config(src_path)
-        fmt_cmd = config['cmd']
+        fmt_cmd = config["cmd"]
         if fmt_cmd is None:
             return
 
@@ -86,15 +85,14 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
         # command.
         fd, p = tempfile.mkstemp()
         try:
-            os.write(fd, bytes(contents, 'UTF-8'))
+            os.write(fd, bytes(contents, "UTF-8"))
             os.close(fd)
 
             cmd = '%s "%s"' % (fmt_cmd, p)
-            if config.get('use_stdin', False):
+            if config.get("use_stdin", False):
                 cmd = '%s < "%s"' % (fmt_cmd, p)
 
-            formatted = subprocess.check_output(
-                cmd, shell=True).decode('UTF-8')
+            formatted = subprocess.check_output(cmd, shell=True).decode("UTF-8")
             self.view.replace(edit, region, formatted)
         finally:
             # Ensure that the tempile fd is closed, and that the tempfile is removed.
@@ -105,9 +103,9 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
 
             os.unlink(p)
 
-        print('SublimeFmt executed in %.3fs' % (time.time() - start))
+        print("SublimeFmt executed in %.3fs" % (time.time() - start))
 
 
 class SublimeFmtListener(sublime_plugin.EventListener):
     def on_pre_save(self, view):
-        view.run_command('sublime_fmt')
+        view.run_command("sublime_fmt")
