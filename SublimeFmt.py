@@ -74,6 +74,9 @@ class SublimeFmtCommand(sublime_plugin.TextCommand):
 
         src_path = self.view.file_name()
         config = find_fmt_config(src_path)
+        if config is None:
+            return
+
         fmt_cmd = config["cmd"]
         if fmt_cmd is None:
             return
